@@ -1,0 +1,14 @@
+---
+- hosts: host
+  vars:
+    - java_home: "/usr/local/jdk1.8.0_181"
+    - zookeeper_hosts:
+        - { 'host': "{{ groups['host'][0] }}", 'id': 1}
+        - { 'host': "{{ groups['host'][1] }}", 'id': 2}
+        - { 'host': "{{ groups['host'][2] }}", 'id': 3}
+    - kafka_zk_quorum: "{{ groups['host'][0] }}:2181,{{ groups['host'][1] }}:2181,{{ groups['host'][2] }}:2181"
+  roles:
+  - { role: os-init }
+  - { role: java, java_version: '1.8' }
+  - { role: zookeeper }
+  - { role: kafka, }

@@ -1,0 +1,15 @@
+- hosts: host
+  vars:
+  - java_home: "/usr/local/jdk1.8.0_181"
+  - es_cluster_name: "escluster"
+    es_unicast_hosts: "[{{ groups['host'][0] }},{{ groups['host'][1] }},{{ groups['host'][2] }}]"
+    es_minimum_master_nodes: 2
+    es_heap_ms: "4g"
+    es_heap_mx: "4g"
+  - es_install_plugins:
+     - x-pack
+     - ingest-geoip
+  - es_service_start: true
+  roles:
+  - { role: java ,java_version: "1.8" }
+  - { role: elasticsearch }

@@ -1,0 +1,11 @@
+---
+
+software_files_path: "/opt/software"
+software_install_path: "/usr/local"
+
+java_version: "1.7"
+
+java_file: "jdk-7u80-linux-x64.tar.gz"
+java_file_path: "{{ software_files_path }}/{{ java_file }}"
+java_install_path: "{{ software_install_path }}/jdk1.7.0_80"
+java_file_url: "http://192.168.1.23/softs/jdk/jdk-7u80-linux-x64.tar.gz"

@@ -1,0 +1,2 @@
+[host]
+192.168.2.3 host_name=k8s-master1 ansible_ssh_user=root ansible_ssh_pass=123456

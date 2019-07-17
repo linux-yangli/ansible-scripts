@@ -1,0 +1,8 @@
+- hosts: host
+  vars:
+    supervisor_name: superset
+    supervisor_program:
+      - { name: 'superset', command: '/usr/local/bin/superset runserver',user: 'superset' }
+  roles:
+    - { role: python2.7 }
+    - { role: supervisor }

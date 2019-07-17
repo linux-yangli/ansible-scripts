@@ -1,0 +1,5 @@
+[host]
+#192.168.1.122 host_name=node1 ansible_ssh_user=root ansible_ssh_pass=123456
+192.168.1.142 host_name=node2 ansible_ssh_user=root ansible_ssh_pass=123456
+#192.168.1.143 host_name=node3 ansible_ssh_user=root ansible_ssh_pass=123456
+

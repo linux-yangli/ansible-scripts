@@ -1,0 +1,12 @@
+[host]
+192.168.2.114 host_name=storm1 ansible_ssh_user=root ansible_ssh_pass=123456
+192.168.2.115 host_name=storm2 ansible_ssh_user=root ansible_ssh_pass=123456
+192.168.2.116 host_name=storm3 ansible_ssh_user=root ansible_ssh_pass=123456
+
+[elastic]
+192.168.2.117 host_name=es1 ansible_ssh_user=root ansible_ssh_pass=123456
+192.168.2.118 host_name=es2 ansible_ssh_user=root ansible_ssh_pass=123456
+192.168.2.119 host_name=es3 ansible_ssh_user=root ansible_ssh_pass=123456
+
+[logstash]
+192.168.2.7 host_name=operator-grafana ansible_ssh_user=root ansible_ssh_pass=123456

@@ -1,0 +1,9 @@
+---
+- name: configure | hostname
+  hostname: name={{ host_name }}
+
+
+- include: install.yml
+- include: configure.yml
+- include: cluster.yml
+  when: rabbitmq_cluster

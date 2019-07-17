@@ -1,0 +1,6 @@
+---
+
+- include: install.yml
+- include: plugins.yml
+  when: logstash_install_plugins
+- include: configure.yml

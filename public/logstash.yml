@@ -1,0 +1,33 @@
+- hosts: node1
+  vars:
+  - logstash_config: |
+          'input {
+                beats {
+                port => 5045
+                codec => multiline{
+                  pattern => "^^# User@Host:"
+                  negate => true
+                  what => previous
+                }
+                }
+          }
+          filter {
+                grok {
+                match => [ "message", "^# User@Host: %{USER:user}(?>\[[^\]]+\])? @ (%{HOSTNAME:hostname})? \[%{IP:ip}?\](\s+)Id:(\s+)%{INT:id:int}(\n)?# Query_time: %{NUMBER:query_time:float}\s+Lock_time: %{NUMBER:lock_time:scaled_float}\s+Rows_sent: %{NUMBER:rows_sent:int}\s+Rows_examined: %{NUMBER:rows_examined:int}(\n)?(?:use %{DATA:database};\s*)?(\n)?SET timestamp=%{NUMBER:timestamp};(\n)?(?<query>(?<action>\w+)(\s+.*)?)?;(\n# Time: .*$)?" ]
+                }
+                date {
+                match => [ "timestamp", "UNIX" ]
+                remove_field => [ "timestamp" ]
+                }
+                mutate {
+                lowercase => ["action"]
+                }
+          }
+          output {
+                stdout { codec => rubydebug }
+          }'
+  - logstash_heap_mx: "256m"
+    logstash_service_start: true
+  roles:
+   - { role: java, java_version: '1.8' }
+   - { role: logstash }

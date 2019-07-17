@@ -1,0 +1,27 @@
+---
+
+software_files_path: "/opt/software"
+software_install_path: "/usr/local"
+
+kafka_version: "0.11.0.1"
+scala_version: "2.11"
+
+
+kafka_file: "kafka_{{ scala_version }}-{{ kafka_version }}.tar.gz"
+kafka_file_path: "{{ software_files_path }}/{{ kafka_file }}"
+kafka_file_url: "http://192.168.1.23/softs/kafka/{{ kafka_file }}"
+
+kafka_user: "kafka"
+kafka_home: "{{ software_install_path }}/kafka_{{ scala_version }}-{{ kafka_version }}"
+
+kafka_brokerid: "{{ 300 | random(start=200) }}"
+kafka_port: 9092
+kafka_jmx_port: ''
+kafka_ssl_port: ''
+
+kafka_name: "kafka"
+kafka_logdirs: "/data/kafka_data/logs"
+kafka_conf: "{{ kafka_home }}/config/server.properties"
+
+kafka_server_logsdir: "/var/log/{{ kafka_name }}"
+kafka_heap_opts: "-Xmx4G -Xms4G"

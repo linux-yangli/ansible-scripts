@@ -1,0 +1,5 @@
+---
+- hosts: host
+  roles:
+  #- os-init
+  - { role: java, java_version: "1.8" }

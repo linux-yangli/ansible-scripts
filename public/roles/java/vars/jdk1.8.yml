@@ -1,0 +1,7 @@
+---
+
+
+java_file: "jdk-8u181-linux-x64.tar.gz"
+java_file_path: "{{ software_files_path }}/{{ java_file }}"
+java_install_path: "{{ software_install_path }}/jdk1.8.0_181"
+java_file_url: "http://192.168.1.23/softs/jdk/jdk-8u181-linux-x64.tar.gz"

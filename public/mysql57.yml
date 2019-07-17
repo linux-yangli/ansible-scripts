@@ -1,0 +1,3 @@
+- hosts: host
+  roles:
+  - { role: mysql57, mysql57_install_from_source: true }

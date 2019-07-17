@@ -1,0 +1,66 @@
+---
+# author: yangli
+- name: head | install  git.
+  yum: name=git state=present
+
+- name: head | configure node repo.
+  stat: path=/etc/yum.repos.d/nodesource-el6.repo 
+  register: node_yum_file
+
+- name: head | get node-yum-key.
+  shell: "curl --silent --location https://rpm.nodesource.com/setup_8.x | bash -"
+  when: not node_yum_file.stat.exists
+
+- name: head | upload node.repo.j2
+  template:
+    src: nodesource-el6.repo.j2 
+    dest: /etc/yum.repos.d/nodesource-el6.repo
+  when: not node_yum_file.stat.exists
+
+
+
+- name: head | node.js
+  yum: name=nodejs state=present
+
+- name: head | nodejs version.
+  command: node -v
+  register: result
+  changed_when: false
+  ignore_errors: True
+
+- debug: var=result.stderr
+
+- name: head | install grunt-cli
+  shell: "npm install -g grunt-cli --registry=https://registry.npm.taobao.org"
+
+- name: head | check head install_dir.
+  stat: path={{ es_head_install_dir }}
+  register: es_head_install_dir_result
+
+- name: head | create head_install_dir
+  file: path={{ es_head_install_dir }} state=directory
+  when: not es_head_install_dir_result.stat.exists
+
+- name: head | copy elasticsearch-head.tar.gz to angent.
+  unarchive:
+    src: elasticsearch-head.tar.gz
+    dest: "{{ es_head_install_dir }}"
+
+#- name: head | git clone head
+#  git: repo={{ es_head_git_repo }} dest={{ es_head_install_dir }}
+#  when: not es_head_install_dir_result.stat.exists
+
+- name: head |  get phantomjs status
+  stat: path=/tmp/phantomjs/phantomjs-2.1.1-linux-x86_64.tar.bz2
+  register: phantomjs_dir
+
+- name: head | create phantomjs dir
+  file: path=/tmp/phantomjs state=directory
+  when: not phantomjs_dir.stat.exists
+
+- name: head | upload phantomjs
+  copy: src=phantomjs-2.1.1-linux-x86_64.tar.bz2 dest=/tmp/phantomjs/  
+
+- name: head | install head
+  shell: "npm install --registry=https://registry.npm.taobao.org  chdir={{ es_head_install_dir }}/elasticsearch-head"
+

@@ -1,0 +1,3 @@
+- hosts: host
+  roles:
+  - { role: erlang, erlang_version: '19.3' }

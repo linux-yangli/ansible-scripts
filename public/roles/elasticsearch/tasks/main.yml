@@ -1,0 +1,18 @@
+---
+- include: install.yml
+
+- include: configure.yml
+- include: install_head.yml
+  when: es_head
+- include: install_ik.yml
+  when: ik_install
+#- include: plugins.yml
+#  when: es_install_plugins
+
+- name: configure | startup elasticsearch.
+  service: "name={{ es_service_name }} state=restarted "
+
+- name: head |  start up head
+  shell:  "cd /usr/local/elasticsearch-head && nohup npm run start & "
+  async: 10
+  poll: 2

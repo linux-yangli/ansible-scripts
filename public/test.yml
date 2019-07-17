@@ -1,0 +1,11 @@
+---
+- hosts: host
+  roles:
+    - java
+  tasks:
+  - name: cluster | Setup hosts.
+    lineinfile: "dest=/etc/hosts line='{{ ansible_default_ipv4.address }} {{ ansible_hostname }}'"
+    delegate_to: "{{ item }}"
+    with_items:
+     - "{{ play_hosts }}"
+  - debug: msg="{{ java_install_path }}"

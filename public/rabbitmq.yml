@@ -1,0 +1,8 @@
+- hosts: host
+  vars:
+    - rabbitmq_plugins: ['rabbitmq_top', 'rabbitmq_mqtt']
+    - rabbitmq_server_users: [{user: 'test', pass: '123456', role: 'administrator'}]
+  roles:
+    - os-init
+    - erlang
+    - { role: rabbitmq, rabbitmq_cluster: true }

@@ -1,0 +1,31 @@
+---
+
+- name: sent apache-storm-1.1.0.tar.gz to agent
+  unarchive: "src=apache-storm-1.1.0.tar.gz dest=/usr/local/"
+
+- name : sopy template
+  template:
+     src: storm.yaml.j2
+     dest: "/usr/local/apache-storm-1.1.0/conf/storm.yaml"
+
+- name: cluster | Setup hosts.
+  lineinfile: "dest=/etc/hosts line='{{ ansible_default_ipv4.address }} {{ ansible_hostname }}'"
+  delegate_to: "{{ item }}"
+  with_items:
+    - "{{ play_hosts }}"
+
+
+
+- name: 启动服务
+  shell: "{{ item }}"
+  with_items:
+  - "/usr/local/apache-storm-1.1.0/bin/storm nimbus &"
+  - "/usr/local/apache-storm-1.1.0/bin/storm supervisor &"
+  - "/usr/local/apache-storm-1.1.0/bin/storm ui &"
+  when:  ansible_hostname == "storm1"
+
+- name: 启动服务
+  shell: "{{ item }}"
+  with_items:
+  - "/usr/local/apache-storm-1.1.0/bin/storm supervisor &"
+  when:  ansible_hostname == "storm2" or ansible_hostname == "storm3"

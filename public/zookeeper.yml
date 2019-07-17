@@ -1,0 +1,9 @@
+---
+- hosts: host
+  vars:
+    - java_home: "/usr/local/jdk1.8.0_181"
+    - zookeeper_hosts:
+        - {'host': 127.0.0.1, 'port': 2181 ,'id': 1, 'leader_port': '2888:3888'}
+  roles:
+  - { role: java, java_version: "1.8" }
+  - { role: zookeeper }

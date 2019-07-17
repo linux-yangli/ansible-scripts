@@ -1,0 +1,7 @@
+- hosts: host
+  vars:
+    - kafka_manager_javahome: " /usr/java/jdk1.8.0_121"
+    - kafka_manager_zk: "zk-kafka1:2181,zk-kafka2:2181,zk-kafka3:2181"
+    - kafka_manager_port: "8080"
+  roles:
+    - { role: kafka-manager }

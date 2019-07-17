@@ -1,0 +1,45 @@
+---
+- name: Include jdk 1.8  variables.
+  include_vars: "jdk1.8.yml"
+  when: java_version == '1.8'
+
+- name: Check if java local file is already configured.
+  stat: path={{ java_file_path }}
+  connection: local
+  register: java_file_result
+
+- name: Create software directory.
+  file: path={{ software_files_path }} state=directory
+  connection: local
+  when: not java_file_result.stat.exists
+  
+- name: Download java file.
+  get_url: url={{ java_file_url }} dest={{ software_files_path }}
+  connection: local
+  when: not java_file_result.stat.exists
+
+- name: Confirm the existence of the installation directory.
+  file: path={{ software_install_path }} state=directory
+
+- name: Copy java file to agent.
+  unarchive:
+    src: "{{ java_file_path }}"
+    dest: "{{ software_install_path }}"
+    creates: "{{ java_install_path }}"
+    owner: "{{ ansible_user_gecos }}"
+
+
+# Environment setup.
+- name: Set JAVA_HOME if configured.
+  template:
+    src: java_home.sh.j2
+    dest: /etc/profile.d/java_home.sh
+    mode: 0644
+
+- name: java version
+  command: javac -version
+  register: result
+  changed_when: false
+  ignore_errors: True
+
+- debug: var=result.stderr

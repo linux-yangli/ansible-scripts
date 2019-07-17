@@ -1,0 +1,6 @@
+- hosts: elastic 
+  vars:
+   - java_home: "/usr/local/jdk1.8.0_181"
+  roles:
+  - { role: java ,java_version: "1.8" }
+  - { role: elasticsearch, es_version: "6.2.3" }

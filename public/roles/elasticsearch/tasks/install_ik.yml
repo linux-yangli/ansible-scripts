@@ -1,0 +1,30 @@
+- name: ik | Check if ik file is already configured.
+  stat: path={{ ik_file_path }}
+  connection: local
+  register: ik_file_result
+
+- name: ik | Create software files path directory.
+  file: path={{ software_files_path }} state=directory
+  connection: local
+  when: not ik_file_result.stat.exists
+
+- name: ik | Download es file.
+  get_url: url={{ ik_file_url }} dest={{ software_files_path }} validate_certs=no
+  connection: local
+  when: not ik_file_result.stat.exists
+
+- name: ik | Confirm the existence of the installation directory.
+  file: path={{ ik_install_dir }} state=directory
+
+- name: ik | Copy ik file to agent.
+  unarchive:
+    src: "{{ ik_file_path }}"
+    dest: "{{ ik_install_dir }}"
+    owner: "{{ es_user }}"
+    group: "{{ es_group }}"
+
+- name: ik | mv 
+  shell: "mv  {{ ik_install_dir }}/elasticsearch {{ ik_install_dir }}/ik"
+
+- name: chmod
+  shell: "chmod -R 777 {{ ik_install_dir }}/ik"

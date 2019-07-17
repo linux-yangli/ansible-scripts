@@ -1,0 +1,119 @@
+---
+
+- block:
+  - name: set hostname
+    hostname: name={{ host_name }}
+  - name: rm old repofile
+    shell: "rm -rf /etc/yum.repos.d/*"
+
+  - name: upload repo file to agent.
+    copy: src={{ item }} dest=/etc/yum.repos.d/
+    with_items:
+     - centos7.repo
+     - epel-centos7.repo
+    when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == "7"
+
+  - name: upload repo file to agent.
+    copy: src={{ item }} dest=/etc/yum.repos.d/
+    with_items:
+     - centos6.repo
+     - epel-centos6.repo
+    when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == "6"
+  
+  - name: yum makecache
+    shell: "yum clean all && yum makecache"
+
+
+  - name: Ensure ntp packages are installed.
+    yum: name=ntp state=installed
+
+  - name: Update time on server.
+    shell: ntpdate 0.asia.pool.ntp.org && hwclock --systohc
+    ignore_errors: true
+    
+  - name: Change ntpd server on ntp.conf.
+    template: src=ntp.conf.j2 dest=/etc/ntp.conf backup=yes
+    notify: restart ntpd
+  tags: ntp
+  
+- name: Change nofile limits.
+  lineinfile: dest=/etc/profile line={{ item }}
+  with_items:
+    - 'ulimit -c unlimited'
+    - 'ulimit -s unlimited'
+    - 'ulimit -SHn 65535'
+    - 'ulimit -S -c 0'
+  tags: limits
+
+- name: Shutdwon selinux.
+  replace: dest=/etc/selinux/config regexp=^SELINUX=enforcing replace=SELINUX=disabled
+  tags: selinux
+  
+- block:
+  - name: Shutdown transparent hugepage.
+    shell: echo never >> /sys/kernel/mm/transparent_hugepage/enabled && echo never >>  /sys/kernel/mm/transparent_hugepage/defrag
+    
+  - lineinfile: dest=/etc/rc.local line={{ item }}
+    with_items:
+     - echo never >> /sys/kernel/mm/transparent_hugepage/enabled
+     - echo never >> /sys/kernel/mm/transparent_hugepage/defrag
+  tags: hugepage
+  
+- name: Shutdown iptables.
+  shell: chkconfig iptables off && /etc/init.d/iptables stop
+  tags: iptables
+  when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == "6"
+
+- name: Shutdown firewalld.
+  shell: systemctl disable firewalld && systemctl stop firewalld
+  tags: firewalld
+  when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == "7"
+
+  
+- name: Ensure gcc packages are installed.
+  yum:
+    name: "{{ item }}"
+    state: installed
+  with_items:
+    - vim
+    - unzip
+    - xz
+    - telnet
+    - lrzsz 
+    - gcc
+    - gcc-c++
+    - libtool
+    - make
+    - automake
+  tags: gcc
+  
+- name: Set vm.overcommit_memory to 1 in /etc/sysctl.conf.
+  sysctl:
+   name: vm.overcommit_memory
+   value: 1
+   state: present
+  tags: overcommit_memory
+
+- name: Set vm.swappiness to 1 in /etc/sysctl.conf.
+  sysctl:
+   name: vm.swappiness
+   value: 1
+   state: present
+  tags: swappiness
+
+- name: set net.ipv4.tcp
+  lineinfile: dest=/etc/sysctl.conf  line={{ item }}
+  with_items:
+   - 'net.ipv4.tcp_syncookies = 1'
+   - 'net.ipv4.tcp_tw_reuse = 1'
+   - 'net.ipv4.tcp_tw_recycle = 0'
+   - 'net.ipv4.tcp_fin_timeout = 30'
+   - 'net.nf_conntrack_max = 655360'
+   - 'net.netfilter.nf_conntrack_tcp_timeout_established = 1200'
+
+- name: setup sysctl.conf.
+  shell: "/sbin/modprobe  nf_conntrack_ipv4 &&sysctl -p"
+
+- name : update bash
+  yum : name=bash state=latest
+  

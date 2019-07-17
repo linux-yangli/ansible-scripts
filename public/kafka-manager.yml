@@ -1,0 +1,15 @@
+- hosts: host
+  vars:
+   - java_home: "/usr/local/jdk1.8.0_181"
+   - zookeeper_hosts:
+        - {'host': 127.0.0.1, 'port': 2181 ,'id': 1, 'leader_port': '2888:3888'}
+   - kafka_zk_quorum: "localhost:2181/kafka"
+   - kafka_manager_javahome: " /usr/local/jdk1.8.0_181"
+   - kafka_manager_zk: "localhost:2181"
+   - kafka_manager_port: "8080"
+  roles:
+  - { role: java, java_version: "1.8" }
+  - { role: sbt, sbt_version: '1.2.5' }
+  - { role: zookeeper }
+  - { role: kafka }
+  - { role: kafka-manager }

@@ -1,0 +1,14 @@
+---
+- hosts: host
+  vars: 
+    - zookeeper_port: 2181
+    - zookeeper_cluster_host: 
+      - "192.168.2.111"
+      - "192.168.2.112"
+      - "192.168.2.113"
+    - java_home: "/usr/local/jdk1.8.0_181"
+    - storm_slot_port: [6700,6701,6702,6703,6704,6705]
+  roles:
+  #- { role: os-init }
+  #- { role: java, java_version: '1.8' }
+  - { role: storm }
